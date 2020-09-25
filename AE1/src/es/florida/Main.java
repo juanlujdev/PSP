@@ -8,5 +8,8 @@ public class Main {
 	
 	App.arrayNombre();
 	App.sumaPar();
+	App.factorial();
     }
+
+
 }

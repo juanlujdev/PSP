@@ -4,6 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class App {
+    public static void factorial() {
+        int num=15;
+        int total=1;
+        for (int i=1;i<=num;i++){
+            total=total*i;
+        }
+        System.out.println("el resultado es: "+ total);
+    }
+
     public void sayHellow(){
         System.out.println("Hola Mundo");
     }
