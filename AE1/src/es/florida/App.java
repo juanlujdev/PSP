@@ -44,8 +44,17 @@ public class App {
                acum=acum+i;
            }
        }
-            System.out.println(acum);
+            System.out.println("la suma de numeros par es: "+acum);
     }
 
 
+    public void AE1_5NumeroMayorArray(int[] array) {
+        int may=array[0];
+        for (int i=0;i<array.length;i++){
+            if(array[i]>may){
+                may=array[i];
+            }
+        }
+        System.out.println("el numero mayor del array es; "+may);
+    }
 }

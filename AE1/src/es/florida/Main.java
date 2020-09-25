@@ -9,6 +9,8 @@ public class Main {
 	App.arrayNombre();
 	App.sumaPar();
 	App.factorial();
+	int array[]={5,2,7,9,1};
+	app.AE1_5NumeroMayorArray(array);
     }
 
 
