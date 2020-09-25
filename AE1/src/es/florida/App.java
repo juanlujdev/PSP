@@ -27,6 +27,16 @@ public class App {
 
 
     }
+    public static void sumaPar(){
+        int number=10;
+        int acum=0;
+       for (int i=0;i<number;i++){
+           if (i%2==0){
+               acum=acum+i;
+           }
+       }
+            System.out.println(acum);
+    }
 
 
 }

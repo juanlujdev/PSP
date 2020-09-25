@@ -7,5 +7,6 @@ public class Main {
 	app.sayHellow();
 	
 	App.arrayNombre();
+	App.sumaPar();
     }
 }
