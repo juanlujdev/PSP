@@ -1,6 +1,7 @@
 package es.florida;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class App {
@@ -56,5 +57,15 @@ public class App {
             }
         }
         System.out.println("el numero mayor del array es; "+may);
+    }
+    public void AE1_6ArrayInverso(List<Integer> arr2) {
+        int suma=0;
+        List<Integer> resultArrayInvers = new ArrayList<>();
+        for (int i=arr2.size();i>0;i--){
+            resultArrayInvers.add(arr2.get(i-1));//le quito uno porque el size coge el tamaño, pero esta en posicion 4 xq empieza desde 0.
+            suma=suma+arr2.get(i-1);
+        }
+        System.out.println (resultArrayInvers);
+        System.out.println("la suma es de: " +suma);
     }
 }
