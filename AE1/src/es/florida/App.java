@@ -68,4 +68,22 @@ public class App {
         System.out.println (resultArrayInvers);
         System.out.println("la suma es de: " +suma);
     }
+
+    public void AE1_7Salario(String name, int years) {
+        if (years<1){
+            System.out.println(name+("es Desarrollador Junior L1 y cobra entre 15000-18000"));
+        }
+        else if ((years>1)&&(years<2)){
+            System.out.println(name+("Es desarrollador Junior L2 y cobra entre 18000-22000"));
+        }
+        else if ((years>3)&&(years<5)){
+            System.out.println(name+("Es Desarrollador Senior L1 y cobra entre 22000-28000"));
+        }
+        else if ((years>5)&&(years<8)){
+            System.out.println("Es Desarrollador Serion L2 y cobra entre 28000-36000");
+        }
+        else{
+            System.out.println(name+("Es analista/Arquitecto. Salario a convenir en base a rol"));
+        }
+    }
 }

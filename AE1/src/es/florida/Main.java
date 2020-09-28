@@ -8,6 +8,7 @@ public class Main {
     public static void main(String[] args) {
     	int cont=0;
 		List<Integer> arrayInverso = new ArrayList<>();
+		Scanner entrada=new Scanner(System.in);
 
 
 	App app=new App();
@@ -19,7 +20,7 @@ public class Main {
 	int array[]={5,2,7,9,1};
 	app.AE1_5NumeroMayorArray(array);
 	do {
-		Scanner entrada=new Scanner(System.in);
+
 		System.out.println("enscriba un numero: ");
 		int number=entrada.nextInt();
 		cont ++;
@@ -27,6 +28,12 @@ public class Main {
 	}
 	while(cont<5);
 		app.AE1_6ArrayInverso(arrayInverso);
+
+		System.out.printf("escriba su nombre: ");
+		String name=entrada.next();
+		System.out.println("años de experiencia?: ");
+		int years=entrada.nextInt();
+		app.AE1_7Salario(name,years);
     }
 
 
