@@ -3,8 +3,10 @@ package es.florida;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Scanner;
 
 public class App {
+    Scanner entrada=new Scanner(System.in);
     public static void factorial() {
         int num=15;
         int total=1;
@@ -76,7 +78,7 @@ public class App {
         else if ((years>1)&&(years<2)){
             System.out.println(name+("Es desarrollador Junior L2 y cobra entre 18000-22000"));
         }
-        else if ((years>3)&&(years<5)){
+        else if (years == 4){
             System.out.println(name+("Es Desarrollador Senior L1 y cobra entre 22000-28000"));
         }
         else if ((years>5)&&(years<8)){
@@ -85,5 +87,65 @@ public class App {
         else{
             System.out.println(name+("Es analista/Arquitecto. Salario a convenir en base a rol"));
         }
+    }
+
+    public void AE1_8Primos() {
+
+        System.out.printf("escribe el primer numero: ");
+        Integer num1 = entrada.nextInt();
+        System.out.printf("escribe el segundo numero: ");
+        Integer num2 = entrada.nextInt();
+
+        long inicio = System.nanoTime();
+
+        if (num1 > num2) {
+            int cont = 0;
+            for (int i = num2; i < num1; i++) {
+                for (int j = 1; j <= num2; j++) {
+                    if ((num2 % j) == 0) {
+                        cont++;
+                    }
+                }
+                if (cont <= 2) {
+                    System.out.println(num2 + (" SI es un numero primo"));
+                    num2++;
+                    cont = 0;
+
+                } else {
+                    System.out.println(num2 + (" NO es un numero primo"));
+                    num2++;
+                    cont = 0;
+
+                }
+
+            }
+
+
+        } else {
+            int cont = 0;
+            for (int i = num1; i < num2; i++) {
+                for (int j = 1; j <= num1; j++) {
+                    if ((num1 % j) == 0) {
+                        cont++;
+                    }
+                }
+                if (cont <= 2) {
+                    System.out.println(num1 + (" SI es un numero primo"));
+                    num1++;
+                    cont = 0;
+
+                } else {
+                    System.out.println(num1 + (" NO es un numero primo"));
+                    num1++;
+                    cont = 0;
+
+                }
+
+            }
+
+        }
+        long fin=System.nanoTime();
+        double dif =(double) (fin-inicio)*1.0e-9;
+        System.out.println("El progrma dura " + dif + "seg");
     }
 }

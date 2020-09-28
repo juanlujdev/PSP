@@ -34,6 +34,8 @@ public class Main {
 		System.out.println("años de experiencia?: ");
 		int years=entrada.nextInt();
 		app.AE1_7Salario(name,years);
+
+		app.AE1_8Primos();
     }
 
 
