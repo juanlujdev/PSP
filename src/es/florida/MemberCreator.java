@@ -1,13 +1,28 @@
 package es.florida;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class MemberCreator implements  Runnable {
+    public MemberCreator() throws IOException {
+
+    }
+
+
 //Creo un LinkedList para meter los nuevo emails
 //declaro MAX_SIZE para decirle que como mucho tenga 1 elemento en la lista( lo hago mas abajo)
 //el contador simplemente es para hacer emails nuevos
+//creo un fichero Email
     private LinkedList<String> emails = new LinkedList<>();
+    File file=new File("Email.txt");
+    FileWriter writer=new FileWriter(file);
+    PrintWriter printer = new PrintWriter(writer);
+
+
     private static final int MAX_SIZE=1;
     int cont = 1;
     int count=0;
@@ -36,24 +51,16 @@ public class MemberCreator implements  Runnable {
         //cuando deja de esperar crea el siguient email
         String email = "Ae2Thread" + cont + "@gmail.com";
         emails.push(email);
+        printer.println(email);
+        printer.flush();
         System.out.println(cont + "- " + email);
         cont++;
-
-        //emails.pop();
     }
     //metodo para saber el tamaño del email
     public int emailsSize(){
         return emails.size();
     }
-/*
-    public String consume() {
-        if (emails.isEmpty()) {
-            System.out.println("Queue is EMPTY of mails. Please wait");
-        } else {
-            return emails.pop();
-        }
-        return null;
-    }*/
+
 //metod para saber cual es el ultimo email introducido
     public String LastEmail() {
         return emails.getLast();
