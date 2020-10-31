@@ -1,7 +1,10 @@
 package es.florida;
 
+import javax.swing.plaf.TableHeaderUI;
+
 public class MailSender {
-    public static void main(String[] args) {
+    public MailSender(MemberCreator memberCreator) {
 
     }
 }
+
