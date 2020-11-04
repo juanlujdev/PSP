@@ -1,8 +1,10 @@
 package es.florida;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
-public class MailSender implements Runnable{
+public class MailSender implements Runnable {
     public String correo;
 
     @Override
@@ -16,25 +18,23 @@ public class MailSender implements Runnable{
         FileReader fr = null;
         BufferedReader br = null;
         try {
-            archivo = new File ("Email.txt");
-            fr = new FileReader (archivo);
+            archivo = new File("Email.txt");
+            fr = new FileReader(archivo);
             br = new BufferedReader(fr);
             String linea;
-            while((linea=br.readLine())!=null){
-                System.out.println("Sr/Sra "+linea+" el nuevo usuario es: "+correo);
+            while ((linea = br.readLine()) != null) {
+                System.out.println("Sr/Sra " + linea + " el nuevo usuario es: " + correo);
             }
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-        }
-        finally{
-            try{
-                if( null != fr ){
+        } finally {
+            try {
+                if (null != fr) {
                     fr.close();
                 }
-            }catch (Exception e2){
+            } catch (Exception e2) {
                 e2.printStackTrace();
             }
         }
-        }
     }
+}
