@@ -3,8 +3,11 @@ package es.florida;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.util.LinkedList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MemberMonitor implements Runnable {
+    public ExecutorService executorService = Executors.newFixedThreadPool(40);
     //lista archivoEmail
     LinkedList<String> archivoEmail = new LinkedList<>();
     int cont = 0;
@@ -37,8 +40,13 @@ public class MemberMonitor implements Runnable {
                 MailSender mailSender = new MailSender();
                 //correo es un atributo publico de MailSender, asi le paso el ultimo email de la lista
                 mailSender.correo = archivoEmail.getLast();
-                //enciendo el hilo de mailsender
-                Main.executorService.execute(mailSender);
+
+                //enciendo el capazo de mailsender
+                executorService.execute(mailSender);
+            }
+            //saber la lista de email:
+            for (int i =0; i<=archivoEmail.size();i++ ){
+                System.out.println("el miembro de la lista es: " + archivoEmail.get(i));
             }
             cont = archivoEmail.size();
             //pongo a 0 el archivoEmail para comparar

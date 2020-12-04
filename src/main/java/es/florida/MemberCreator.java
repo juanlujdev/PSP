@@ -16,7 +16,7 @@ public class MemberCreator implements Runnable {
         //bucle infinito
         while (true) {
             //si el booleano es true
-            if (stopCreator == true) {
+            //if (stopCreator == true) {
                 try {
                     //no se que es getAbsoluteFile(), true
                     // le paso el fichero y con el true le digo que existe
@@ -39,9 +39,9 @@ public class MemberCreator implements Runnable {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-            } else {
-                System.out.println("HE PARADO LA EJECUCION DEL CREATOR");
-            }
+           // } else {
+           //     System.out.println("HE PARADO LA EJECUCION DEL CREATOR");
+            //}
         }
     }
 }
