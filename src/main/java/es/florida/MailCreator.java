@@ -12,17 +12,21 @@ public class MailCreator implements Runnable {
 
     private static final int MAILDEV_PORT=1025;
     LinkedList<String>list=new LinkedList<>();
-    MemberMonitor memberMonitor=new MemberMonitor();
     File archivo = new File("Email.txt");
 
     @Override
     public void run() {
         try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        try {
             list=returnFile(archivo);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-
+        System.out.println("HAY AHORA EN LA LISTA:" + list.size());
         //lanzo email
 
         try {
@@ -36,9 +40,11 @@ public class MailCreator implements Runnable {
                 email.setMsg("Se ha incorporado un nuevo miembro " + list.getLast());
                 email.send();
             }
+
         } catch (EmailException e) {
             e.printStackTrace();
         }
+
 
     }
         //meto el fichero y se lo paso a la lista para poder recorrerla (lo hago asi porque no puedo pasar la lista

@@ -7,7 +7,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MemberMonitor implements Runnable {
-
+    //Activo el pool en memberCreator
+    public static ExecutorService executorService = Executors.newFixedThreadPool(40);
     //lista archivoEmail
     LinkedList<String> archivoEmail = new LinkedList<>();
     int cont = 0;
@@ -38,9 +39,12 @@ public class MemberMonitor implements Runnable {
             //si la lista es mayor de lo q tiene el contador, (si hay nuevo email)
             if (archivoEmail.size() > cont) {
                 MailSender mailSender = new MailSender();
-
+                //Activo el pool
+                executorService.execute(mailSender);
+                //Activo el hilo
+                /*
                 Thread mailSenderThread = new Thread(mailSender);
-                mailSenderThread.start();
+                mailSenderThread.start();*/
                 //correo es un atributo publico de MailSender, asi le paso el ultimo email de la lista
                 mailSender.correo = archivoEmail.getLast();
             }
