@@ -10,7 +10,7 @@ public class MemberMonitor implements Runnable {
     //Activo el pool en memberCreator
     public static ExecutorService executorService = Executors.newFixedThreadPool(40);
     //lista archivoEmail
-    LinkedList<String> archivoEmail = new LinkedList<>();
+    LinkedList<String> emails = new LinkedList<>();
     int cont = 0;
     FileReader fr = null;
     BufferedReader br = null;
@@ -25,19 +25,9 @@ public class MemberMonitor implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            try {
-                fr = new FileReader("./Email.txt");
-                br = new BufferedReader(fr);
-                String linea;
-                //si es distinto de nulo lo del fichero Email.txt añdame la linea a la lista
-                while ((linea = br.readLine()) != null) {
-                    archivoEmail.add(linea);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            //si la lista es mayor de lo q tiene el contador, (si hay nuevo email)
-            if (archivoEmail.size() > cont) {
+            emails = rellenaLista();
+            if (emails.size() > cont) {
+                cont = emails.size();
                 MailSender mailSender = new MailSender();
                 //Activo el pool
                 executorService.execute(mailSender);
@@ -46,12 +36,27 @@ public class MemberMonitor implements Runnable {
                 Thread mailSenderThread = new Thread(mailSender);
                 mailSenderThread.start();*/
                 //correo es un atributo publico de MailSender, asi le paso el ultimo email de la lista
-                mailSender.correo = archivoEmail.getLast();
+                mailSender.correo = emails.getLast();
+
             }
-            cont = archivoEmail.size();
+
             //pongo a 0 el archivoEmail para comparar
-
-
         }
+    }
+
+    private LinkedList<String> rellenaLista() {
+        LinkedList<String> archivoEmail = new LinkedList<>();
+        try {
+            fr = new FileReader("./Email.txt");
+            br = new BufferedReader(fr);
+            String linea;
+            //si es distinto de nulo lo del fichero Email.txt añdame la linea a la lista
+            while ((linea = br.readLine()) != null) {
+                archivoEmail.add(linea);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return archivoEmail;
     }
 }
