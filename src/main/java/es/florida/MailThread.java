@@ -8,7 +8,7 @@ public class MailThread implements Runnable {
 
 
     @Override
-    public void run(){
+    public void run() {
         try {
             email.send();
         } catch (EmailException e) {
