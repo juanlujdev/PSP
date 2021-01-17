@@ -2,6 +2,8 @@ package es.florida;
 
 import java.io.*;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class WorkerServer implements Runnable {
 
@@ -16,11 +18,83 @@ public class WorkerServer implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
-            try {
-                print();
+//        while (true) {
+        try {
 
-                //Para enviarle cosas al cliente OutputStream
+            while (true) {
+                //Escribir cosas en el telnet, hace visible los datos en el cmd (Telnet)
+                PrintWriter writer = buildWriter(connection);
+                //Para enviar algo al cliente
+                showMenu(writer);
+                //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
+                BufferedReader reader = buildReader(connection);
+                String line;
+                //con readLine leo linea x linea
+                line = reader.readLine();
+                switch (line) {
+                    case "1":
+                        System.out.println(giveMeDateNow() + " Pulsa la opcion 1");
+                        writer.println("Elija la operacion deseada.");
+                        showMenu(writer);
+                        break;
+                    case "2":
+                        System.out.println(giveMeDateNow() + "Pulsa opcion crear usuario");
+                        writer.println("Nombre: ");
+                        String name;
+                        name = reader.readLine();
+                        writer.println("Apellidos: ");
+                        String surname;
+                        surname = reader.readLine();
+                        writer.println("Email: ");
+                        String email;
+                        email = reader.readLine();
+                        System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
+                        showMenu(writer);
+                        break;
+                    case "3":
+                        System.out.println(giveMeDateNow() + "Pulsa opcion eliminar usuario");
+                        writer.println("Email a eliminar: ");
+                        String deleteEmail;
+                        deleteEmail = reader.readLine();
+                        System.out.println(giveMeDateNow() + "Elimina usuario: " + deleteEmail);
+                        showMenu(writer);
+                        break;
+                    case "4":
+                        System.out.println(giveMeDateNow() + " Pulsa opcion Compra/Venta");
+                        writer.println("Escribe BUY O SELL SEGUIDO DE - Y ACRONIMO: ");
+                        String compra;
+                        compra = reader.readLine();
+                        System.out.println(giveMeDateNow() + "operacion realizada: " + compra);
+                        showMenu(writer);
+                        break;
+                    case "5":
+                        System.out.println(giveMeDateNow() + " Pulsa opcion bloquear servidor");
+                        writer.println("Codigo de bloqueo de servidor: ");
+                        String code;
+                        code = reader.readLine();
+                        System.out.println(giveMeDateNow() + "introducido codigo de bloqueo: " + code);
+                        showMenu(writer);
+                        break;
+                    case "6":
+                        System.out.println(giveMeDateNow() + " Pulsar desbloquear servidor: ");
+                        writer.println("Escribe codigo de desbloqueo: ");
+                        String code2;
+                        code2 = reader.readLine();
+                        System.out.println(giveMeDateNow() + " Se desbloquea el servidor: " + code2);
+                        showMenu(writer);
+                        break;
+                    case "7":
+                        System.out.println(giveMeDateNow() + "Desconectar");
+                        showMenu(writer);
+                        break;
+                    default:
+                        System.out.println("fin");
+                        break;
+                }
+            }
+
+
+            //Para enviarle cosas al cliente OutputStream
 //                OutputStream outputStream = connection.getOutputStream();
 //                //Para recibir cosas del cliente
 //                InputStream input = connection.getInputStream();
@@ -28,14 +102,14 @@ public class WorkerServer implements Runnable {
 //                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
 //                // Escribir cosas en el telnet, hace visible los datos en el cmd (Telnet)
 //                PrintWriter printer = new PrintWriter(new OutputStreamWriter(outputStream));
-                //Para enviar algo al cliente
+            //Para enviar algo al cliente
 //                printer.println("Bienvenido");
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
+//        }
 
 
         //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
@@ -55,25 +129,40 @@ public class WorkerServer implements Runnable {
 
     }
 
-    private void print() throws IOException {
-//        BufferedReader reader = buildReader(connection);
-
-        PrintWriter writer = buildWriter(connection);
-        writer.println("Bienvenido");
-
+    private void showMenu(PrintWriter writer) {
+        writer.println("1- OPERACIONES DISPONIBLES");
+        writer.println("2- Crear usuario");
+        writer.println("3- Eliminar usuario");
+        writer.println("4- Notificacion para usuario");
+        writer.println("5- Bloquear servidor");
+        writer.println("6- Desbloquar servidor");
+        writer.println("7- Desconectar");
     }
 
+    private String giveMeDateNow() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy - HH:mm:ss");
+        String date = dateFormat.format(new Date());
+        return date;
+    }
 
+    //Metodo para preparar lo que se va a recibir de Telnet
     private BufferedReader buildReader(Socket connection) throws IOException {
+        //Para recoger las cosas del cliente de telnet
         InputStream inputStream = connection.getInputStream();
+        //Para preparalo para el papel para q luego lo lea
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        //donde leerlo
         BufferedReader reader = new BufferedReader(inputStreamReader);
         return reader;
     }
 
+    //Metodo para preparar lo que hay que enviar al telnet
     private PrintWriter buildWriter(Socket connection) throws IOException {
+        //Para enviarle cosas al cliente OutputStream(lo que piensas decir)
         OutputStream outputStream = connection.getOutputStream();
+        //Para escribirlo(el papel para escribirlo)
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
+        //el que printea (tiene la capacidad de hacer visible lo que has escrito)(la impresora donde escribe)
         PrintWriter printer = new PrintWriter(outputStreamWriter, true);
         return printer;
     }
