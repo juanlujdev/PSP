@@ -12,5 +12,12 @@
         <maven.compiler.source>15</maven.compiler.source>
         <maven.compiler.target>15</maven.compiler.target>
     </properties>
+    <dependencies>
+        <dependency>
+            <groupId>es.florida</groupId>
+            <artifactId>mailSender</artifactId>
+            <version>1.0</version>
+        </dependency>
+    </dependencies>
 
 </project>

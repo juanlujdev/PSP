@@ -80,15 +80,11 @@ public class WorkerServer implements Runnable {
                                 System.out.println("este no es igual de 3: " + s);
                                 //guardar una lista nueva y pasarlo a Email.txt
                                 ListDeleteUser.add(s);
-                                runNewUserThread(ListDeleteUser);
-                            }
+                                runNewUserThread(ListDeleteUser);                            }
                             else{
                                 System.out.println(giveMeDateNow()+"el usuario "+ deleteEmail+ " ha sido eliminado");
                             }
-
                         }
-
-
                         System.out.println(giveMeDateNow() + "Elimina usuario: " + deleteEmail);
                         showMenu(writer);
                         break;
