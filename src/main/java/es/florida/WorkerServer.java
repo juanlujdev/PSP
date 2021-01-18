@@ -18,11 +18,12 @@ public class WorkerServer implements Runnable {
     public WorkerServer(Socket clientConnetion) {
         //Le asigno ese Socket al cliente que viene desde el Server
         this.connection = clientConnetion;
+
     }
 
     @Override
     public void run() {
-
+//instancion sendNotify para el envio del correo y la opcion utilizada
         try {
 
             while (true) {
@@ -91,9 +92,14 @@ public class WorkerServer implements Runnable {
                     case "4":
                         System.out.println(giveMeDateNow() + " Pulsa opcion Compra/Venta");
                         writer.println("Escribe BUY O SELL SEGUIDO DE - Y ACRONIMO: ");
-                        String compra;
-                        compra = reader.readLine();
-                        System.out.println(giveMeDateNow() + "operacion realizada: " + compra);
+                        String option;
+                        option = reader.readLine();
+                        for (String s:usersList) {
+                            String lastEmail=getEmailST(s);
+                        //hacer metodo para arrancar hilo de sendNotify y enviar el mail y probar si envia correos
+                            inicialiceNotify(option, lastEmail);
+                        }
+                        System.out.println(giveMeDateNow() + "operacion realizada: " + option);
                         showMenu(writer);
                         break;
                     case "5":
@@ -140,6 +146,12 @@ public class WorkerServer implements Runnable {
 //            //esa line y empezariamos a procesar las peticiones del cliente.
 //        }
 
+    }
+
+    private void inicialiceNotify(String option, String lastEmail) {
+        SendNotify sendNotify=new SendNotify(option, lastEmail);
+        Thread sendNotifyThread=new Thread(sendNotify);
+        sendNotifyThread.start();
     }
 
     private String getEmailST(String s) {
