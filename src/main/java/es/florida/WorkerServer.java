@@ -5,13 +5,14 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
+import java.util.StringTokenizer;
 
 public class WorkerServer implements Runnable {
 
     //Le asigno un Socket cuando llega a nuestro constructor el cliente desde el Server
     private Socket connection;
     //creo una lista donde almaceno los nuevos usuarios que se registren
-    LinkedList<String> usersList=new LinkedList<>();
+    LinkedList<String> usersList = new LinkedList<>();
 
     //Recibo una conexion en el constructor(quiere decir que por cada hilo(son 5) crea una consulta TELNET)
     public WorkerServer(Socket clientConnetion) {
@@ -44,14 +45,14 @@ public class WorkerServer implements Runnable {
                         System.out.println(giveMeDateNow() + "Pulsa opcion crear usuario");
                         writer.println("Nombre: ");
                         String name;
-                        name = reader.readLine()+";";
+                        name = reader.readLine() + ";";
                         writer.println("Apellidos: ");
                         String surname;
-                        surname = reader.readLine()+";";
+                        surname = reader.readLine() + ";";
                         writer.println("Email: ");
                         String email;
-                        email = reader.readLine()+";";
-                        String newUser=name+surname+email;
+                        email = reader.readLine() + ";";
+                        String newUser = name + surname + email;
                         //Arrancar hilo de User y pasarle el usuario
                         System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
                         usersList.add(newUser);
@@ -61,8 +62,33 @@ public class WorkerServer implements Runnable {
                     case "3":
                         System.out.println(giveMeDateNow() + "Pulsa opcion eliminar usuario");
                         writer.println("Email a eliminar: ");
+                        LinkedList<String> ListDeleteUser = new LinkedList<>();
                         String deleteEmail;
                         deleteEmail = reader.readLine();
+                        File file = new File("Email.txt");
+                        //borro el fichero y lo vuelvo a crear
+                        file.delete();
+                        file.createNewFile();
+                        //visualizo cada linea de la lista
+                        for (String s : usersList) {
+                            //me traigo el mail con el metodo getEmailST
+                            String emailMatch = getEmailST(s);
+                            System.out.println("el email es: " + emailMatch);
+                            //si el mail que traigo es distinto que el q vamos a borrar guardo la linea en una nueva
+                            //lista y la paso al nmetodo q guarta en el fichero
+                            if (!emailMatch.equals(deleteEmail)) {
+                                System.out.println("este no es igual de 3: " + s);
+                                //guardar una lista nueva y pasarlo a Email.txt
+                                ListDeleteUser.add(s);
+                                runNewUserThread(ListDeleteUser);
+                            }
+                            else{
+                                System.out.println(giveMeDateNow()+"el usuario "+ deleteEmail+ " ha sido eliminado");
+                            }
+
+                        }
+
+
                         System.out.println(giveMeDateNow() + "Elimina usuario: " + deleteEmail);
                         showMenu(writer);
                         break;
@@ -120,11 +146,21 @@ public class WorkerServer implements Runnable {
 
     }
 
+    private String getEmailST(String s) {
+        //StringTokenizer sirve para quitar de la cadena que le pasamos lo que queremos,
+        //le paso las lineas y quitamos la separacion de ";", como sabemos que la posicion
+        //del email es la 3ª devolvemos el nextToken() la tercera vez.
+        StringTokenizer tokenizer = new StringTokenizer(s, ";");
+        tokenizer.nextToken();
+        tokenizer.nextToken();
+        return tokenizer.nextToken();
+    }
+
     private void runNewUserThread(LinkedList usersList) throws InterruptedException {
-        User user=new User();
-        Thread userThread=new Thread(user);
+        User user = new User();
+        Thread userThread = new Thread(user);
         userThread.start();
-        user.user= usersList;
+        user.user = usersList;
         userThread.join();
     }
 
