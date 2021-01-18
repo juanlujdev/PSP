@@ -4,11 +4,14 @@ import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 
 public class WorkerServer implements Runnable {
 
     //Le asigno un Socket cuando llega a nuestro constructor el cliente desde el Server
     private Socket connection;
+    //creo una lista donde almaceno los nuevos usuarios que se registren
+    LinkedList<String> usersList=new LinkedList<>();
 
     //Recibo una conexion en el constructor(quiere decir que por cada hilo(son 5) crea una consulta TELNET)
     public WorkerServer(Socket clientConnetion) {
@@ -18,7 +21,7 @@ public class WorkerServer implements Runnable {
 
     @Override
     public void run() {
-//        while (true) {
+
         try {
 
             while (true) {
@@ -41,14 +44,18 @@ public class WorkerServer implements Runnable {
                         System.out.println(giveMeDateNow() + "Pulsa opcion crear usuario");
                         writer.println("Nombre: ");
                         String name;
-                        name = reader.readLine();
+                        name = reader.readLine()+";";
                         writer.println("Apellidos: ");
                         String surname;
-                        surname = reader.readLine();
+                        surname = reader.readLine()+";";
                         writer.println("Email: ");
                         String email;
-                        email = reader.readLine();
+                        email = reader.readLine()+";";
+                        String newUser=name+surname+email;
+                        //Arrancar hilo de User y pasarle el usuario
                         System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
+                        usersList.add(newUser);
+                        runNewUserThread(usersList);
                         showMenu(writer);
                         break;
                     case "3":
@@ -92,25 +99,9 @@ public class WorkerServer implements Runnable {
                         break;
                 }
             }
-
-
-            //Para enviarle cosas al cliente OutputStream
-//                OutputStream outputStream = connection.getOutputStream();
-//                //Para recibir cosas del cliente
-//                InputStream input = connection.getInputStream();
-//                //con BufferedReader leemos lo que nos viene de cliente
-//                BufferedReader reader = new BufferedReader(new InputStreamReader(input));
-//                // Escribir cosas en el telnet, hace visible los datos en el cmd (Telnet)
-//                PrintWriter printer = new PrintWriter(new OutputStreamWriter(outputStream));
-            //Para enviar algo al cliente
-//                printer.println("Bienvenido");
-
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
-
-//        }
-
 
         //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
         //con readLine leo linea x linea
@@ -127,6 +118,14 @@ public class WorkerServer implements Runnable {
 //            //esa line y empezariamos a procesar las peticiones del cliente.
 //        }
 
+    }
+
+    private void runNewUserThread(LinkedList usersList) throws InterruptedException {
+        User user=new User();
+        Thread userThread=new Thread(user);
+        userThread.start();
+        user.user= usersList;
+        userThread.join();
     }
 
     private void showMenu(PrintWriter writer) {
@@ -151,7 +150,7 @@ public class WorkerServer implements Runnable {
         InputStream inputStream = connection.getInputStream();
         //Para preparalo para el papel para q luego lo lea
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        //donde leerlo
+        //donde leerlo,con BufferedReader leemos lo que nos viene de cliente
         BufferedReader reader = new BufferedReader(inputStreamReader);
         return reader;
     }

@@ -25,7 +25,7 @@ public class Server implements Runnable {
                 //aqui uno el Socket con el Servidor del Socket y conecto
                 clientConnetion = server.accept();
                 System.out.println("Client connected to port " + clientConnetion.getPort());
-                //Le paso la conexion de cliente a la clase WorkerSerrver por uno de los 5 hilos
+                //Le paso la conexion de cliente a la clase WorkerServer por uno de los 5 hilos
                 executorService.execute(new WorkerServer(clientConnetion));
             }
         } catch (IOException e) {
