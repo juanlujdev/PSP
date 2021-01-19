@@ -76,7 +76,6 @@ public class WorkerServer implements Runnable {
                         showMenu(writer);
                         break;
                     case "3":
-
                         System.out.println(giveMeDateNow() + "Pulsa opcion eliminar usuario");
                         writer.println("Email a eliminar: ");
                         LinkedList<String> ListDeleteUser = new LinkedList<>();
@@ -153,10 +152,18 @@ public class WorkerServer implements Runnable {
                     case "6":
                         System.out.println(giveMeDateNow() + " Pulsar desbloquear servidor: ");
                         writer.println("Escribe codigo de desbloqueo: ");
-                        String code2;
-                        code2 = reader.readLine();
-                        System.out.println(giveMeDateNow() + " Se desbloquea el servidor: " + code2);
-                        showMenu(writer);
+                        String password2;
+                        password2 = reader.readLine();
+                        boolean matches2 = encryptor.checkPassword(password2, encryptPassword);
+                        if (matches2) {
+                            System.out.println("la clave coincide");
+                            fileBlock.delete();
+                            System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo: " + password2);
+                            showMenu(writer);
+                        } else {
+                            System.out.println("Clave incorrecta");
+                            showMenu(writer);
+                        }
                         break;
                     case "7":
                         System.out.println(giveMeDateNow() + "Desconectar");
