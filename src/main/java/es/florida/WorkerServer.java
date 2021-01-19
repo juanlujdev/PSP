@@ -6,9 +6,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.StringTokenizer;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WorkerServer implements Runnable {
-
+    //pongo 2 hilos a la escucha como dice el enunciado(parte de abajo del enunciado)
+    private ExecutorService executorService = Executors.newFixedThreadPool(2);
     //Le asigno un Socket cuando llega a nuestro constructor el cliente desde el Server
     private Socket connection;
     //creo una lista donde almaceno los nuevos usuarios que se registren
@@ -18,19 +21,21 @@ public class WorkerServer implements Runnable {
     public WorkerServer(Socket clientConnetion) {
         //Le asigno ese Socket al cliente que viene desde el Server
         this.connection = clientConnetion;
-
     }
+
+    User user = new User();
 
     @Override
     public void run() {
 //instancion sendNotify para el envio del correo y la opcion utilizada
         try {
-
+            //Escribir cosas en el telnet, hace visible los datos en el cmd (Telnet)
+            PrintWriter writer = buildWriter(connection);
+//Para enviar algo al cliente
+            showMenu(writer);
             while (true) {
-                //Escribir cosas en el telnet, hace visible los datos en el cmd (Telnet)
-                PrintWriter writer = buildWriter(connection);
-                //Para enviar algo al cliente
-                showMenu(writer);
+
+
                 //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
                 BufferedReader reader = buildReader(connection);
                 String line;
@@ -57,7 +62,10 @@ public class WorkerServer implements Runnable {
                         //Arrancar hilo de User y pasarle el usuario
                         System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
                         usersList.add(newUser);
-                        runNewUserThread(usersList);
+                        user.printEmail(usersList);
+                        //activo el user a traves del pool y le paso la lista que tiene que guardar en el fichero
+//                        newUser();
+//                        runNewUserThread(usersList);
                         showMenu(writer);
                         break;
                     case "3":
@@ -74,18 +82,19 @@ public class WorkerServer implements Runnable {
                         for (String s : usersList) {
                             //me traigo el mail con el metodo getEmailST
                             String emailMatch = getEmailST(s);
-                            System.out.println("el email es: " + emailMatch);
                             //si el mail que traigo es distinto que el q vamos a borrar guardo la linea en una nueva
                             //lista y la paso al nmetodo q guarta en el fichero
                             if (!emailMatch.equals(deleteEmail)) {
-                                System.out.println("este no es igual de 3: " + s);
                                 //guardar una lista nueva y pasarlo a Email.txt
                                 ListDeleteUser.add(s);
-                                runNewUserThread(ListDeleteUser);                            }
-                            else{
-                                System.out.println(giveMeDateNow()+"el usuario "+ deleteEmail+ " ha sido eliminado");
+                                user.printEmail(ListDeleteUser);
+                            } else {
+                                System.out.println(giveMeDateNow() + "el usuario " + deleteEmail + " ha sido eliminado");
                             }
                         }
+                        //metodo para igualar la lista de delete a la de userList xq luego al eliminar un usuario
+                        //no tienen los mismos datos y no puedo trabajar con ellas
+                        deleteUserEqualUserList(ListDeleteUser);
                         System.out.println(giveMeDateNow() + "Elimina usuario: " + deleteEmail);
                         showMenu(writer);
                         break;
@@ -93,12 +102,19 @@ public class WorkerServer implements Runnable {
                         System.out.println(giveMeDateNow() + " Pulsa opcion Compra/Venta");
                         writer.println("Escribe BUY O SELL SEGUIDO DE - Y ACRONIMO: ");
                         String option;
+                        //metodo para concatenar strings en java
+                        StringBuilder stringBuilder = new StringBuilder();
                         option = reader.readLine();
-                        for (String s:usersList) {
-                            String lastEmail=getEmailST(s);
-                        //hacer metodo para arrancar hilo de sendNotify y enviar el mail y probar si envia correos
+                        for (String s : usersList) {
+                            String lastEmail = getEmailST(s);
+                            //hacer metodo para arrancar hilo de sendNotify y enviar el mail y probar si envia correos
                             inicialiceNotify(option, lastEmail);
                         }
+                        //mostrar mensaje de las direcciones de correo notificadas
+                        for (String s : usersList) {
+                            stringBuilder.append(s);
+                        }
+                        writer.println("user: " + stringBuilder.toString());
                         System.out.println(giveMeDateNow() + "operacion realizada: " + option);
                         showMenu(writer);
                         break;
@@ -123,11 +139,12 @@ public class WorkerServer implements Runnable {
                         showMenu(writer);
                         break;
                     default:
-                        System.out.println("fin");
+                        writer.println("no existe esa opcion");
+                        showMenu(writer);
                         break;
                 }
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -148,9 +165,20 @@ public class WorkerServer implements Runnable {
 
     }
 
+//    private void newUser() {
+//        executorService.execute(new User(usersList));
+//    }
+
+    private void deleteUserEqualUserList(LinkedList<String> ListDeleteUser) {
+        usersList = new LinkedList<>();
+        for (String s : ListDeleteUser) {
+            usersList.add(s);
+        }
+    }
+
     private void inicialiceNotify(String option, String lastEmail) {
-        SendNotify sendNotify=new SendNotify(option, lastEmail);
-        Thread sendNotifyThread=new Thread(sendNotify);
+        SendNotify sendNotify = new SendNotify(option, lastEmail);
+        Thread sendNotifyThread = new Thread(sendNotify);
         sendNotifyThread.start();
     }
 
@@ -162,14 +190,6 @@ public class WorkerServer implements Runnable {
         tokenizer.nextToken();
         tokenizer.nextToken();
         return tokenizer.nextToken();
-    }
-
-    private void runNewUserThread(LinkedList usersList) throws InterruptedException {
-        User user = new User();
-        Thread userThread = new Thread(user);
-        userThread.start();
-        user.user = usersList;
-        userThread.join();
     }
 
     private void showMenu(PrintWriter writer) {

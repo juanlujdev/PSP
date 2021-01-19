@@ -6,22 +6,19 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedList;
 
-public class User implements Runnable {
-    public LinkedList user;
+public class User {
 
-    @Override
-    public void run() {
-        System.out.println("En user ha llegado el siguiente usuario: " + user);
+
+    public void printEmail(LinkedList<String>users) throws IOException {
+        System.out.println("En user ha llegado el siguiente usuario: " + users);
         //creo el fichero donde se van a guardar los nuevos usuario
         File file = new File("Email.txt");
         FileWriter writer = null;
-        try {
-            writer = new FileWriter(file.getAbsoluteFile(), true);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        writer = new FileWriter(file.getAbsoluteFile(), true);
         PrintWriter printer = new PrintWriter(writer);
-        printer.println(user.getLast());
+        printer.println(users.getLast());
         printer.close();
-        }
     }
+
+
+}

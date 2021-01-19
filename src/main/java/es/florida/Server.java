@@ -7,7 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Server implements Runnable {
-    //Server utilizara 5 hilos
+    //Server utilizara 5 hilos para conectarse 5 brokers
     ExecutorService executorService = Executors.newFixedThreadPool(5);
     private static final int SERVER_PORT = 9876;
 
