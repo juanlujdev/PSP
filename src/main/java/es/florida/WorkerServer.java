@@ -1,5 +1,7 @@
 package es.florida;
 
+import org.jasypt.util.password.BasicPasswordEncryptor;
+
 import java.io.*;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
@@ -23,7 +25,13 @@ public class WorkerServer implements Runnable {
         this.connection = clientConnetion;
     }
 
+    BasicPasswordEncryptor encryptor = new BasicPasswordEncryptor();
     User user = new User();
+    String truePassword = "juan";
+    String encryptPassword = encryptor.encryptPassword(truePassword);
+    File fileBlock = new File("ServerBlock.txt");
+    boolean show1;
+    boolean show2;
 
     @Override
     public void run() {
@@ -31,11 +39,11 @@ public class WorkerServer implements Runnable {
         try {
             //Escribir cosas en el telnet, hace visible los datos en el cmd (Telnet)
             PrintWriter writer = buildWriter(connection);
-//Para enviar algo al cliente
+            //Para mostrar menu segun halla fichero.
+
             showMenu(writer);
+
             while (true) {
-
-
                 //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
                 BufferedReader reader = buildReader(connection);
                 String line;
@@ -48,6 +56,7 @@ public class WorkerServer implements Runnable {
                         showMenu(writer);
                         break;
                     case "2":
+
                         System.out.println(giveMeDateNow() + "Pulsa opcion crear usuario");
                         writer.println("Nombre: ");
                         String name;
@@ -63,12 +72,11 @@ public class WorkerServer implements Runnable {
                         System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
                         usersList.add(newUser);
                         user.printEmail(usersList);
-                        //activo el user a traves del pool y le paso la lista que tiene que guardar en el fichero
-//                        newUser();
-//                        runNewUserThread(usersList);
+
                         showMenu(writer);
                         break;
                     case "3":
+
                         System.out.println(giveMeDateNow() + "Pulsa opcion eliminar usuario");
                         writer.println("Email a eliminar: ");
                         LinkedList<String> ListDeleteUser = new LinkedList<>();
@@ -96,36 +104,51 @@ public class WorkerServer implements Runnable {
                         //no tienen los mismos datos y no puedo trabajar con ellas
                         deleteUserEqualUserList(ListDeleteUser);
                         System.out.println(giveMeDateNow() + "Elimina usuario: " + deleteEmail);
+
                         showMenu(writer);
                         break;
                     case "4":
-                        System.out.println(giveMeDateNow() + " Pulsa opcion Compra/Venta");
-                        writer.println("Escribe BUY O SELL SEGUIDO DE - Y ACRONIMO: ");
-                        String option;
-                        //metodo para concatenar strings en java
-                        StringBuilder stringBuilder = new StringBuilder();
-                        option = reader.readLine();
-                        for (String s : usersList) {
-                            String lastEmail = getEmailST(s);
-                            //arranco el pool de sendnotify para enviar el mail y probar si envia correos
-                            executorService.execute(new SendNotify(option,lastEmail));
-//
+                        if (fileBlock.exists()) {
+                            writer.println("El servidor esta bloqueado");
+                            System.out.println(giveMeDateNow() + " El servidor esta bloqueado");
+                        } else {
+                            System.out.println(giveMeDateNow() + " Pulsa opcion Compra/Venta");
+                            writer.println("Escribe BUY O SELL SEGUIDO DE - Y ACRONIMO: ");
+                            String option;
+                            //metodo para concatenar strings en java
+                            StringBuilder stringBuilder = new StringBuilder();
+                            option = reader.readLine();
+                            for (String s : usersList) {
+                                String lastEmail = getEmailST(s);
+                                //arranco el pool de sendnotify para enviar el mail y probar si envia correos
+                                executorService.execute(new SendNotify(option, lastEmail));
+                            }
+                            //mostrar mensaje de las direcciones de correo notificadas (concatenarlas)
+                            for (String s : usersList) {
+                                stringBuilder.append(s);
+                            }
+                            writer.println("user: " + stringBuilder.toString());
+                            System.out.println(giveMeDateNow() + "operacion realizada: " + option);
                         }
-                        //mostrar mensaje de las direcciones de correo notificadas (concatenarlas)
-                        for (String s : usersList) {
-                            stringBuilder.append(s);
-                        }
-                        writer.println("user: " + stringBuilder.toString());
-                        System.out.println(giveMeDateNow() + "operacion realizada: " + option);
+
                         showMenu(writer);
                         break;
                     case "5":
                         System.out.println(giveMeDateNow() + " Pulsa opcion bloquear servidor");
                         writer.println("Codigo de bloqueo de servidor: ");
-                        String code;
-                        code = reader.readLine();
-                        System.out.println(giveMeDateNow() + "introducido codigo de bloqueo: " + code);
-                        showMenu(writer);
+                        String password;
+                        password = reader.readLine();
+                        boolean matches = encryptor.checkPassword(password, encryptPassword);
+                        if (matches) {
+                            System.out.println("la clave coincide");
+                            fileBlock.createNewFile();
+                            System.out.println(giveMeDateNow() + "introducido codigo de bloqueo: " + password);
+                            showMenu(writer);
+                        } else {
+                            System.out.println("Clave incorrecta");
+                            showMenu(writer);
+                        }
+
                         break;
                     case "6":
                         System.out.println(giveMeDateNow() + " Pulsar desbloquear servidor: ");
@@ -150,6 +173,7 @@ public class WorkerServer implements Runnable {
         }
 
     }
+
 
     private void deleteUserEqualUserList(LinkedList<String> ListDeleteUser) {
         usersList = new LinkedList<>();
@@ -177,6 +201,7 @@ public class WorkerServer implements Runnable {
         writer.println("6- Desbloquar servidor");
         writer.println("7- Desconectar");
     }
+
 
     private String giveMeDateNow() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy - HH:mm:ss");
