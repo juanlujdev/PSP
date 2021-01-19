@@ -10,7 +10,6 @@ public class User {
 
 
     public void printEmail(LinkedList<String>users) throws IOException {
-        System.out.println("En user ha llegado el siguiente usuario: " + users);
         //creo el fichero donde se van a guardar los nuevos usuario
         File file = new File("Email.txt");
         FileWriter writer = null;

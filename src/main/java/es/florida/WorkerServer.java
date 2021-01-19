@@ -30,9 +30,21 @@ public class WorkerServer implements Runnable {
     String truePassword = "juan";
     String encryptPassword = encryptor.encryptPassword(truePassword);
     File fileBlock = new File("ServerBlock.txt");
+    File file = new File("Email.txt");
+    BufferedReader br=null;
+    FileReader fr=null;
+
 
     @Override
     public void run() {
+        if (file.exists()){
+            try {
+                extracted();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
 //instancion sendNotify para el envio del correo y la opcion utilizada
         try {
             //Escribir cosas en el telnet, hace visible los datos en el cmd (Telnet)
@@ -70,7 +82,6 @@ public class WorkerServer implements Runnable {
                         System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
                         usersList.add(newUser);
                         user.printEmail(usersList);
-
                         showMenu(writer);
                         break;
                     case "3":
@@ -79,7 +90,7 @@ public class WorkerServer implements Runnable {
                         LinkedList<String> ListDeleteUser = new LinkedList<>();
                         String deleteEmail;
                         deleteEmail = reader.readLine();
-                        File file = new File("Email.txt");
+
                         //borro el fichero y lo vuelvo a crear
                         file.delete();
                         file.createNewFile();
@@ -108,27 +119,46 @@ public class WorkerServer implements Runnable {
                         if (fileBlock.exists()) {
                             writer.println("El servidor esta bloqueado");
                             System.out.println(giveMeDateNow() + " El servidor esta bloqueado");
+                            showMenu(writer);
                         } else {
                             System.out.println(giveMeDateNow() + " Pulsa opcion Compra/Venta");
-                            writer.println("Escribe BUY O SELL SEGUIDO DE - Y ACRONIMO: ");
-                            String option;
-                            //metodo para concatenar strings en java
-                            StringBuilder stringBuilder = new StringBuilder();
-                            option = reader.readLine();
-                            for (String s : usersList) {
-                                String lastEmail = getEmailST(s);
-                                //arranco el pool de sendnotify para enviar el mail y probar si envia correos
-                                executorService.execute(new SendNotify(option, lastEmail));
+                            writer.println("1- BUY");
+                            writer.println("2- SELL");
+                            writer.println("3- Salir");
+                            line = reader.readLine();
+                            switch (line) {
+                                case "1":
+                                    String buyMessage = "BUY-";
+                                    String acronimo;
+                                    writer.println("Escribe el acronimo");
+                                    acronimo = reader.readLine();
+                                    String sendMessage = buyMessage + acronimo;
+                                    for (String s : usersList) {
+                                        String lastEmail = getEmailST(s);
+                                        executorService.execute(new SendNotify(sendMessage, lastEmail));
+                                    }
+                                    System.out.println(giveMeDateNow()+ " se manda: "+sendMessage);
+                                    showMenu(writer);
+                                    break;
+                                case "2":
+                                    String sellMessage = "SELL-";
+                                    String acronimo2;
+                                    writer.println("Escribe acronimo");
+                                    acronimo2 = reader.readLine();
+                                    String sendMessage2 = sellMessage + acronimo2;
+                                    for (String s : usersList) {
+                                        String lastEmail = getEmailST(s);
+                                        executorService.execute(new SendNotify(sendMessage2, lastEmail));
+                                    }
+                                    System.out.println(giveMeDateNow()+ " se manda: "+sendMessage2);
+                                    showMenu(writer);
+                                    break;
+                                case "3":
+                                    System.out.println(giveMeDateNow()+" salimos de compra/venta");
+                                    showMenu(writer);
+                                    break;
                             }
-                            //mostrar mensaje de las direcciones de correo notificadas (concatenarlas)
-                            for (String s : usersList) {
-                                stringBuilder.append(s);
-                            }
-                            writer.println("user: " + stringBuilder.toString());
-                            System.out.println(giveMeDateNow() + "operacion realizada: " + option);
                         }
-
-                        showMenu(writer);
                         break;
                     case "5":
                         System.out.println(giveMeDateNow() + " Pulsa opcion bloquear servidor");
@@ -155,10 +185,12 @@ public class WorkerServer implements Runnable {
                         boolean matches2 = encryptor.checkPassword(password2, encryptPassword);
                         if (matches2) {
                             System.out.println("la clave coincide");
+                            writer.println("La clave coincide");
                             fileBlock.delete();
-                            System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo: " + password2);
+                            System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo correcta: ");
                             showMenu(writer);
                         } else {
+                            writer.println("Clave incorrecta");
                             System.out.println("Clave incorrecta");
                             showMenu(writer);
                         }
@@ -167,7 +199,7 @@ public class WorkerServer implements Runnable {
                         System.out.println(giveMeDateNow() + "Desconectar");
                         connection.close();
                         writer.println("Conexion desconectada");
-                        System.out.println(giveMeDateNow()+ "desconexion del servidor");
+                        System.out.println(giveMeDateNow() + "desconexion del servidor");
                         break;
                     default:
                         writer.println("no existe esa opcion");
@@ -179,6 +211,15 @@ public class WorkerServer implements Runnable {
             e.printStackTrace();
         }
 
+    }
+
+    private void extracted() throws IOException {
+        fr=new FileReader("./Email.txt");
+        br=new BufferedReader(fr);
+        String linea;
+        while ((linea=br.readLine())!=null) {
+            usersList.add(linea);
+        }
     }
 
 

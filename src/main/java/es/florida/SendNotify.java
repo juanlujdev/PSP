@@ -10,8 +10,6 @@ public class SendNotify implements Runnable {
     //Creo un constructor q me traigo la opcion elegida y el ultimo email desde donde se instancia y
     //declaro los atributos fuera y los igualo dentro para poder manejarlo abajo
     public SendNotify(String option, String lastEmail) {
-        System.out.println("la opcion elegida es: " + option);
-        System.out.println("el mail es: " + lastEmail);
         this.email=lastEmail;
         this.option=option;
     }
