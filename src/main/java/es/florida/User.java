@@ -1,9 +1,6 @@
 package es.florida;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.*;
 import java.util.LinkedList;
 
 public class User {
@@ -12,10 +9,16 @@ public class User {
     public void printEmail(LinkedList<String>users) throws IOException {
         //creo el fichero donde se van a guardar los nuevos usuario
         File file = new File("Email.txt");
-        FileWriter writer = null;
-        writer = new FileWriter(file.getAbsoluteFile(), true);
-        PrintWriter printer = new PrintWriter(writer);
-        printer.println(users.getLast());
+        FileWriter writerFile = null;
+        BufferedWriter bw = new BufferedWriter(new FileWriter(file));
+        bw.write("");
+        bw.close();
+        writerFile = new FileWriter(file.getAbsoluteFile(), true);
+        PrintWriter printer = new PrintWriter(writerFile);
+        for (String s: users) {
+            printer.println(s);
+        }
+
         printer.close();
     }
 
