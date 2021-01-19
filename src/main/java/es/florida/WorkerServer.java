@@ -107,10 +107,11 @@ public class WorkerServer implements Runnable {
                         option = reader.readLine();
                         for (String s : usersList) {
                             String lastEmail = getEmailST(s);
-                            //hacer metodo para arrancar hilo de sendNotify y enviar el mail y probar si envia correos
-                            inicialiceNotify(option, lastEmail);
+                            //arranco el pool de sendnotify para enviar el mail y probar si envia correos
+                            executorService.execute(new SendNotify(option,lastEmail));
+//
                         }
-                        //mostrar mensaje de las direcciones de correo notificadas
+                        //mostrar mensaje de las direcciones de correo notificadas (concatenarlas)
                         for (String s : usersList) {
                             stringBuilder.append(s);
                         }
@@ -148,38 +149,13 @@ public class WorkerServer implements Runnable {
             e.printStackTrace();
         }
 
-        //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
-        //con readLine leo linea x linea
-//        String line;
-//        while (true) {
-//            try {
-//
-//                if (!((line = reader.readLine()) != null)) break;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//            System.out.println(line);
-//            //la peticion que me venga del cliente con ese line tendre que procesarlo, llamaria a una funcion con
-//            //esa line y empezariamos a procesar las peticiones del cliente.
-//        }
-
     }
-
-//    private void newUser() {
-//        executorService.execute(new User(usersList));
-//    }
 
     private void deleteUserEqualUserList(LinkedList<String> ListDeleteUser) {
         usersList = new LinkedList<>();
         for (String s : ListDeleteUser) {
             usersList.add(s);
         }
-    }
-
-    private void inicialiceNotify(String option, String lastEmail) {
-        SendNotify sendNotify = new SendNotify(option, lastEmail);
-        Thread sendNotifyThread = new Thread(sendNotify);
-        sendNotifyThread.start();
     }
 
     private String getEmailST(String s) {
