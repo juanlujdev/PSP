@@ -30,8 +30,6 @@ public class WorkerServer implements Runnable {
     String truePassword = "juan";
     String encryptPassword = encryptor.encryptPassword(truePassword);
     File fileBlock = new File("ServerBlock.txt");
-    boolean show1;
-    boolean show2;
 
     @Override
     public void run() {
@@ -167,7 +165,9 @@ public class WorkerServer implements Runnable {
                         break;
                     case "7":
                         System.out.println(giveMeDateNow() + "Desconectar");
-                        showMenu(writer);
+                        connection.close();
+                        writer.println("Conexion desconectada");
+                        System.out.println(giveMeDateNow()+ "desconexion del servidor");
                         break;
                     default:
                         writer.println("no existe esa opcion");
