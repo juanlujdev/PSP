@@ -1,5 +1,7 @@
 package es.florida.client;
 
+import org.jasypt.util.text.StrongTextEncryptor;
+
 import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -15,7 +17,9 @@ public class Main {
         OutputStream outputStream = socket.getOutputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         PrintWriter printer = new PrintWriter(new OutputStreamWriter(outputStream), true);
-        System.out.println("Introduce comando: ");
+//        printer.println("hola");
+        System.out.println(reader.readLine());
+//        System.out.println("Introduce comando: ");
         String entradaTeclado;
         Scanner entradaEscaner = new Scanner(System.in);
 
@@ -25,9 +29,16 @@ public class Main {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
+                if (line.equals("Escribe codigo de desbloqueo:")){
+                    String pass =entradaEscaner.nextLine();
+                    StrongTextEncryptor superEncryptor = new StrongTextEncryptor();
+                    superEncryptor.setPassword("algo");
+                    printer.println(superEncryptor.encrypt(pass));
+                }
                 if (line.endsWith(".") || line.endsWith(":")) {
                     break;
                 }
+
             }
         }
     }

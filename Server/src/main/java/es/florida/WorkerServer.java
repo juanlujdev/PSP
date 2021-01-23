@@ -1,6 +1,7 @@
 package es.florida;
 
 import org.jasypt.util.password.BasicPasswordEncryptor;
+import org.jasypt.util.text.StrongTextEncryptor;
 
 import java.io.*;
 import java.net.Socket;
@@ -18,7 +19,8 @@ public class WorkerServer implements Runnable {
     private Socket connection;
     //creo una lista donde almaceno los nuevos usuarios que se registren
     LinkedList<String> usersList = new LinkedList<>();
-
+    //lista donde recargo todos los usuarios excepto el q hay q eliminar, es la unica manera para borrar
+    LinkedList<String> ListDeleteUser = new LinkedList<>();
     //Recibo una conexion en el constructor(quiere decir que por cada hilo(son 5) crea una consulta TELNET)
     public WorkerServer(Socket clientConnetion) {
         //Le asigno ese Socket al cliente que viene desde el Server
@@ -27,7 +29,7 @@ public class WorkerServer implements Runnable {
 
     BasicPasswordEncryptor encryptor = new BasicPasswordEncryptor();
     User user = new User();
-    String truePassword = "juan";
+    String truePassword = "uRd1Rw4PTHTjFZt3iXWpNA==";
     String encryptPassword = encryptor.encryptPassword(truePassword);
     File fileBlock = new File("ServerBlock.txt");
     File file = new File("Email.txt");
@@ -53,7 +55,8 @@ public class WorkerServer implements Runnable {
             PrintWriter writer = buildWriter(connection);
             //Para mostrar menu segun halla fichero.
 
-            showMenu(writer);
+//            showMenu(writer);
+            writer.println("menu");
 
             while (true) {
                 //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
@@ -64,7 +67,7 @@ public class WorkerServer implements Runnable {
                 switch (line) {
                     case "1":
                         System.out.println(giveMeDateNow() + " Pulsa la opcion 1");
-                        writer.println("Elija la operacion deseada.");
+                        writer.println("Elija la operacion deseada");
                         showMenu(writer);
                         break;
                     case "2":
@@ -73,6 +76,9 @@ public class WorkerServer implements Runnable {
                         break;
                     case "3":
                         deleteUser(writer, reader);
+                        //metodo para igualar la lista de delete a la de userList xq luego al eliminar un usuario
+                        //no tienen los mismos datos y no puedo trabajar con ellas
+                        deleteUserEqualUserList(ListDeleteUser);
                         showMenu(writer);
                         break;
                     case "4":
@@ -100,7 +106,7 @@ public class WorkerServer implements Runnable {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e);
         }
     }
 
@@ -109,15 +115,21 @@ public class WorkerServer implements Runnable {
         writer.println("Escribe codigo de desbloqueo:");
         String password2;
         password2 = reader.readLine();
-        boolean matches2 = encryptor.checkPassword(password2, encryptPassword);
-        if (matches2) {
-            System.out.println("la clave coincide.");
-            writer.println("La clave coincide.");
+        System.out.println(password2);
+        StrongTextEncryptor superEncryptor= new StrongTextEncryptor();
+        superEncryptor.setPassword("algo");
+        String password = superEncryptor.decrypt(password2);
+        String password1= superEncryptor.decrypt(truePassword);
+
+        if (password.equals(password1)) {
+            writer.println("La clave coincide");
             fileBlock.delete();
-            System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo correcta:");
+            System.out.println("la clave coincide");
+
+            System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo correcto");
         } else {
-            writer.println("Clave incorrecta.");
-            System.out.println("Clave incorrecta.");
+            writer.println("Clave incorrecta");
+            System.out.println("Clave incorrecta");
         }
     }
 
@@ -129,6 +141,7 @@ public class WorkerServer implements Runnable {
         boolean matches = encryptor.checkPassword(password, encryptPassword);
         if (matches) {
             System.out.println("la clave coincide.");
+            writer.println("la clave coincide, servidor bloqueado");
             fileBlock.createNewFile();
             System.out.println(giveMeDateNow() + "introducido codigo de bloqueo:" + password);
         } else {
@@ -138,7 +151,7 @@ public class WorkerServer implements Runnable {
 
     private void lock(PrintWriter writer, BufferedReader reader) throws IOException {
         if (fileBlock.exists()) {
-            writer.println("El servidor esta bloqueado.");
+            writer.println("El servidor esta bloqueado");
             System.out.println(giveMeDateNow() + " El servidor esta bloqueado.");
         } else {
             optionBuySell(writer, reader);
@@ -150,13 +163,13 @@ public class WorkerServer implements Runnable {
         System.out.println(giveMeDateNow() + " Pulsa opcion Compra/Venta");
         writer.println("1- BUY");
         writer.println("2- SELL");
-        writer.println("3- Salir");
+        writer.println("3- Salir.");
         line = reader.readLine();
         switch (line) {
             case "1":
                 String buyMessage = "BUY-";
                 String acronimo;
-                writer.println("Escribe el acronimo");
+                writer.println("Escribe el acronimo.");
                 acronimo = reader.readLine();
                 String sendMessage = buyMessage + acronimo;
                 for (String s : usersList) {
@@ -164,12 +177,11 @@ public class WorkerServer implements Runnable {
                     executorService.execute(new SendNotify(sendMessage, lastEmail));
                 }
                 System.out.println(giveMeDateNow() + " se manda: " + sendMessage);
-                showMenu(writer);
                 break;
             case "2":
                 String sellMessage = "SELL-";
                 String acronimo2;
-                writer.println("Escribe acronimo");
+                writer.println("Escribe acronimo.");
                 acronimo2 = reader.readLine();
                 String sendMessage2 = sellMessage + acronimo2;
                 for (String s : usersList) {
@@ -177,15 +189,12 @@ public class WorkerServer implements Runnable {
                     executorService.execute(new SendNotify(sendMessage2, lastEmail));
                 }
                 System.out.println(giveMeDateNow() + " se manda: " + sendMessage2);
-                showMenu(writer);
                 break;
             case "3":
                 System.out.println(giveMeDateNow() + " salimos de compra/venta");
-                showMenu(writer);
                 break;
             default:
                 writer.println("no existe esa opcion");
-                showMenu(writer);
                 break;
         }
     }
@@ -193,13 +202,13 @@ public class WorkerServer implements Runnable {
     private void deleteUser(PrintWriter writer, BufferedReader reader) throws IOException {
         System.out.println(giveMeDateNow() + "Pulsa opcion eliminar usuario.");
         writer.println("Email a eliminar:");
-        LinkedList<String> ListDeleteUser = new LinkedList<>();
+        ListDeleteUser = new LinkedList<>();
         String deleteEmail;
         deleteEmail = reader.readLine();
-//        File file = new File("Email.txt");
+        //File file = new File("Email.txt");
         //borro el fichero y lo vuelvo a crear
-        file.delete();
-        file.createNewFile();
+//        file.delete();
+//        file.createNewFile();
         //visualizo cada linea de la lista
         for (String s : usersList) {
             //me traigo el mail con el metodo getEmailST
@@ -211,13 +220,10 @@ public class WorkerServer implements Runnable {
                 ListDeleteUser.add(s);
                 user.printEmail(ListDeleteUser);
             } else {
-                writer.println(deleteEmail + " ha sido eliminado.");
                 System.out.println(giveMeDateNow() + "el usuario " + deleteEmail + " ha sido eliminado.");
+                writer.print(deleteEmail + " ha sido eliminado.");
             }
         }
-        //metodo para igualar la lista de delete a la de userList xq luego al eliminar un usuario
-        //no tienen los mismos datos y no puedo trabajar con ellas
-        deleteUserEqualUserList(ListDeleteUser);
     }
 
     private void createUser(PrintWriter writer, BufferedReader reader) throws IOException {
@@ -236,8 +242,8 @@ public class WorkerServer implements Runnable {
         //instancia de User y pasarle el usuario
         usersList.add(newUser);
         user.printEmail(usersList);
-        writer.print(newUser+" ha sido creado.");
         System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
+        writer.print(newUser+" ha sido creado.");
     }
 
     private void loadList() throws IOException {
@@ -274,7 +280,7 @@ public class WorkerServer implements Runnable {
         writer.println("4- Notificacion para usuario");
         writer.println("5- Bloquear servidor");
         writer.println("6- Desbloquar servidor");
-        writer.println("7- Desconectar");
+        writer.println("7- Desconectar.");
     }
 
 
