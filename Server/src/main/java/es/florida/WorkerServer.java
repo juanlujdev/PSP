@@ -31,7 +31,9 @@ public class WorkerServer implements Runnable {
     String encryptPassword = encryptor.encryptPassword(truePassword);
     File fileBlock = new File("ServerBlock.txt");
     File file = new File("Email.txt");
+    //es una clase de Java para leer el texto de una secuencia de entrada
     BufferedReader br = null;
+    //clase usada para leer archivos de caracteres
     FileReader fr = null;
 
 
