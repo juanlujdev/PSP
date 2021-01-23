@@ -69,29 +69,32 @@ public class WorkerServer implements Runnable {
                         break;
                     case "2":
                         createUser(writer, reader);
+                        showMenu(writer);
                         break;
                     case "3":
-                        System.out.println(giveMeDateNow() + "Pulsa opcion eliminar usuario");
                         deleteUser(writer, reader);
+                        showMenu(writer);
                         break;
                     case "4":
                         lock(writer, reader);
+                        showMenu(writer);
                         break;
                     case "5":
                         unLock(writer, reader);
-
+                        showMenu(writer);
                         break;
                     case "6":
                         blockServer(writer, reader);
+                        showMenu(writer);
                         break;
                     case "7":
-                        System.out.println(giveMeDateNow() + "Desconectar");
+                        System.out.println(giveMeDateNow() + "Desconectar.");
                         connection.close();
-                        writer.println("Conexion desconectada");
-                        System.out.println(giveMeDateNow() + "desconexion del servidor");
+                        writer.println("Conexion desconectada.");
+                        System.out.println(giveMeDateNow() + "desconexion del servidor.");
                         break;
                     default:
-                        writer.println("no existe esa opcion");
+                        writer.println("no existe esa opcion.");
                         showMenu(writer);
                         break;
                 }
@@ -102,46 +105,41 @@ public class WorkerServer implements Runnable {
     }
 
     private void blockServer(PrintWriter writer, BufferedReader reader) throws IOException {
-        System.out.println(giveMeDateNow() + " Pulsar desbloquear servidor: ");
-        writer.println("Escribe codigo de desbloqueo: ");
+        System.out.println(giveMeDateNow() + " Pulsar desbloquear servidor:");
+        writer.println("Escribe codigo de desbloqueo:");
         String password2;
         password2 = reader.readLine();
         boolean matches2 = encryptor.checkPassword(password2, encryptPassword);
         if (matches2) {
-            System.out.println("la clave coincide");
-            writer.println("La clave coincide");
+            System.out.println("la clave coincide.");
+            writer.println("La clave coincide.");
             fileBlock.delete();
-            System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo correcta: ");
-            showMenu(writer);
+            System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo correcta:");
         } else {
-            writer.println("Clave incorrecta");
-            System.out.println("Clave incorrecta");
-            showMenu(writer);
+            writer.println("Clave incorrecta.");
+            System.out.println("Clave incorrecta.");
         }
     }
 
     private void unLock(PrintWriter writer, BufferedReader reader) throws IOException {
         System.out.println(giveMeDateNow() + " Pulsa opcion bloquear servidor");
-        writer.println("Codigo de bloqueo de servidor: ");
+        writer.println("Codigo de bloqueo de servidor:");
         String password;
         password = reader.readLine();
         boolean matches = encryptor.checkPassword(password, encryptPassword);
         if (matches) {
-            System.out.println("la clave coincide");
+            System.out.println("la clave coincide.");
             fileBlock.createNewFile();
-            System.out.println(giveMeDateNow() + "introducido codigo de bloqueo: " + password);
-            showMenu(writer);
+            System.out.println(giveMeDateNow() + "introducido codigo de bloqueo:" + password);
         } else {
-            System.out.println("Clave incorrecta");
-            showMenu(writer);
+            System.out.println("Clave incorrecta.");
         }
     }
 
     private void lock(PrintWriter writer, BufferedReader reader) throws IOException {
         if (fileBlock.exists()) {
-            writer.println("El servidor esta bloqueado");
-            System.out.println(giveMeDateNow() + " El servidor esta bloqueado");
-            showMenu(writer);
+            writer.println("El servidor esta bloqueado.");
+            System.out.println(giveMeDateNow() + " El servidor esta bloqueado.");
         } else {
             optionBuySell(writer, reader);
         }
@@ -193,11 +191,12 @@ public class WorkerServer implements Runnable {
     }
 
     private void deleteUser(PrintWriter writer, BufferedReader reader) throws IOException {
-        writer.println("Email a eliminar: ");
+        System.out.println(giveMeDateNow() + "Pulsa opcion eliminar usuario.");
+        writer.println("Email a eliminar:");
         LinkedList<String> ListDeleteUser = new LinkedList<>();
         String deleteEmail;
         deleteEmail = reader.readLine();
-        File file = new File("Email.txt");
+//        File file = new File("Email.txt");
         //borro el fichero y lo vuelvo a crear
         file.delete();
         file.createNewFile();
@@ -212,33 +211,33 @@ public class WorkerServer implements Runnable {
                 ListDeleteUser.add(s);
                 user.printEmail(ListDeleteUser);
             } else {
-                writer.println(deleteEmail + " ha sido eliminado");
-                System.out.println(giveMeDateNow() + "el usuario " + deleteEmail + " ha sido eliminado");
+                writer.println(deleteEmail + " ha sido eliminado.");
+                System.out.println(giveMeDateNow() + "el usuario " + deleteEmail + " ha sido eliminado.");
             }
         }
         //metodo para igualar la lista de delete a la de userList xq luego al eliminar un usuario
         //no tienen los mismos datos y no puedo trabajar con ellas
         deleteUserEqualUserList(ListDeleteUser);
-        showMenu(writer);
     }
 
     private void createUser(PrintWriter writer, BufferedReader reader) throws IOException {
-        System.out.println(giveMeDateNow() + "Pulsa opcion crear usuario");
-        writer.println("Nombre: ");
+        System.out.println(giveMeDateNow() + "Pulsa opcion crear usuario ");
+
         String name;
-        name = reader.readLine() + ";";
-        writer.println("Apellidos: ");
         String surname;
-        surname = reader.readLine() + ";";
-        writer.println("Email: ");
         String email;
+        writer.println("Nombre:");
+        name = reader.readLine() + ";";
+        writer.println("Apellidos:");
+        surname = reader.readLine() + ";";
+        writer.println("Email:");
         email = reader.readLine() + ";";
         String newUser = name + surname + email;
-        //Arrancar hilo de User y pasarle el usuario
-        System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
+        //instancia de User y pasarle el usuario
         usersList.add(newUser);
         user.printEmail(usersList);
-        showMenu(writer);
+        writer.print(newUser+" ha sido creado.");
+        System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
     }
 
     private void loadList() throws IOException {
