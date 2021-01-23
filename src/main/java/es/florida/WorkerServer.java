@@ -31,13 +31,13 @@ public class WorkerServer implements Runnable {
     String encryptPassword = encryptor.encryptPassword(truePassword);
     File fileBlock = new File("ServerBlock.txt");
     File file = new File("Email.txt");
-    BufferedReader br=null;
-    FileReader fr=null;
+    BufferedReader br = null;
+    FileReader fr = null;
 
 
     @Override
     public void run() {
-        if (file.exists()){
+        if (file.exists()) {
             try {
                 loadList();
             } catch (IOException e) {
@@ -163,7 +163,7 @@ public class WorkerServer implements Runnable {
                     String lastEmail = getEmailST(s);
                     executorService.execute(new SendNotify(sendMessage, lastEmail));
                 }
-                System.out.println(giveMeDateNow()+ " se manda: "+sendMessage);
+                System.out.println(giveMeDateNow() + " se manda: " + sendMessage);
                 showMenu(writer);
                 break;
             case "2":
@@ -176,11 +176,15 @@ public class WorkerServer implements Runnable {
                     String lastEmail = getEmailST(s);
                     executorService.execute(new SendNotify(sendMessage2, lastEmail));
                 }
-                System.out.println(giveMeDateNow()+ " se manda: "+sendMessage2);
+                System.out.println(giveMeDateNow() + " se manda: " + sendMessage2);
                 showMenu(writer);
                 break;
             case "3":
-                System.out.println(giveMeDateNow()+" salimos de compra/venta");
+                System.out.println(giveMeDateNow() + " salimos de compra/venta");
+                showMenu(writer);
+                break;
+            default:
+                writer.println("no existe esa opcion");
                 showMenu(writer);
                 break;
         }
@@ -206,7 +210,7 @@ public class WorkerServer implements Runnable {
                 ListDeleteUser.add(s);
                 user.printEmail(ListDeleteUser);
             } else {
-                writer.println(deleteEmail+" ha sido eliminado");
+                writer.println(deleteEmail + " ha sido eliminado");
                 System.out.println(giveMeDateNow() + "el usuario " + deleteEmail + " ha sido eliminado");
             }
         }
@@ -236,10 +240,10 @@ public class WorkerServer implements Runnable {
     }
 
     private void loadList() throws IOException {
-        fr=new FileReader("./Email.txt");
-        br=new BufferedReader(fr);
+        fr = new FileReader("./Email.txt");
+        br = new BufferedReader(fr);
         String linea;
-        while ((linea=br.readLine())!=null) {
+        while ((linea = br.readLine()) != null) {
             usersList.add(linea);
         }
     }
@@ -251,6 +255,7 @@ public class WorkerServer implements Runnable {
             usersList.add(s);
         }
     }
+
     private String getEmailST(String s) {
         //StringTokenizer sirve para quitar de la cadena que le pasamos lo que queremos,
         //le paso las lineas y quitamos la separacion de ";", como sabemos que la posicion

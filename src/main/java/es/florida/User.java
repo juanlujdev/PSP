@@ -6,7 +6,7 @@ import java.util.LinkedList;
 public class User {
 
 
-    public void printEmail(LinkedList<String>users) throws IOException {
+    public void printEmail(LinkedList<String> users) throws IOException {
         //creo el fichero donde se van a guardar los nuevos usuario
         File file = new File("Email.txt");
         FileWriter writerFile = null;
@@ -15,10 +15,9 @@ public class User {
         bw.close();
         writerFile = new FileWriter(file.getAbsoluteFile(), true);
         PrintWriter printer = new PrintWriter(writerFile);
-        for (String s: users) {
+        for (String s : users) {
             printer.println(s);
         }
-
         printer.close();
     }
 
