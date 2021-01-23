@@ -1,6 +1,5 @@
 package es.florida;
 
-import org.jasypt.util.password.BasicPasswordEncryptor;
 import org.jasypt.util.text.StrongTextEncryptor;
 
 import java.io.*;
@@ -21,16 +20,16 @@ public class WorkerServer implements Runnable {
     LinkedList<String> usersList = new LinkedList<>();
     //lista donde recargo todos los usuarios excepto el q hay q eliminar, es la unica manera para borrar
     LinkedList<String> ListDeleteUser = new LinkedList<>();
+
     //Recibo una conexion en el constructor(quiere decir que por cada hilo(son 5) crea una consulta TELNET)
     public WorkerServer(Socket clientConnetion) {
         //Le asigno ese Socket al cliente que viene desde el Server
         this.connection = clientConnetion;
     }
 
-    BasicPasswordEncryptor encryptor = new BasicPasswordEncryptor();
+
     User user = new User();
     String truePassword = "uRd1Rw4PTHTjFZt3iXWpNA==";
-    String encryptPassword = encryptor.encryptPassword(truePassword);
     File fileBlock = new File("ServerBlock.txt");
     File file = new File("Email.txt");
     //es una clase de Java para leer el texto de una secuencia de entrada
@@ -56,7 +55,7 @@ public class WorkerServer implements Runnable {
             //Para mostrar menu segun halla fichero.
 
 //            showMenu(writer);
-            writer.println("menu");
+            writer.println("pulsa 1 para ver menu");
 
             while (true) {
                 //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
@@ -99,6 +98,8 @@ public class WorkerServer implements Runnable {
                         writer.println("Conexion desconectada.");
                         System.out.println(giveMeDateNow() + "desconexion del servidor.");
                         break;
+                    case "":
+                        break;
                     default:
                         writer.println("no existe esa opcion.");
                         showMenu(writer);
@@ -115,18 +116,15 @@ public class WorkerServer implements Runnable {
         writer.println("Escribe codigo de desbloqueo:");
         String password2;
         password2 = reader.readLine();
-        System.out.println(password2);
-        StrongTextEncryptor superEncryptor= new StrongTextEncryptor();
+        StrongTextEncryptor superEncryptor = new StrongTextEncryptor();
         superEncryptor.setPassword("algo");
         String password = superEncryptor.decrypt(password2);
-        String password1= superEncryptor.decrypt(truePassword);
-
+        String password1 = superEncryptor.decrypt(truePassword);
         if (password.equals(password1)) {
-            writer.println("La clave coincide");
             fileBlock.delete();
             System.out.println("la clave coincide");
-
             System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo correcto");
+            writer.println("clave correcta, servidor desbloqueado");
         } else {
             writer.println("Clave incorrecta");
             System.out.println("Clave incorrecta");
@@ -136,14 +134,17 @@ public class WorkerServer implements Runnable {
     private void unLock(PrintWriter writer, BufferedReader reader) throws IOException {
         System.out.println(giveMeDateNow() + " Pulsa opcion bloquear servidor");
         writer.println("Codigo de bloqueo de servidor:");
-        String password;
-        password = reader.readLine();
-        boolean matches = encryptor.checkPassword(password, encryptPassword);
-        if (matches) {
+        String password2;
+        password2 = reader.readLine();
+        StrongTextEncryptor superEncryptor = new StrongTextEncryptor();
+        superEncryptor.setPassword("algo");
+        String password = superEncryptor.decrypt(password2);
+        String password1 = superEncryptor.decrypt(truePassword);
+        if (password.equals(password1)) {
             System.out.println("la clave coincide.");
             writer.println("la clave coincide, servidor bloqueado");
             fileBlock.createNewFile();
-            System.out.println(giveMeDateNow() + "introducido codigo de bloqueo:" + password);
+            System.out.println(giveMeDateNow() + "introducido correctamente codigo de bloqueo:");
         } else {
             System.out.println("Clave incorrecta.");
         }
@@ -243,7 +244,7 @@ public class WorkerServer implements Runnable {
         usersList.add(newUser);
         user.printEmail(usersList);
         System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
-        writer.print(newUser+" ha sido creado.");
+        writer.print(newUser + " ha sido creado.");
     }
 
     private void loadList() throws IOException {

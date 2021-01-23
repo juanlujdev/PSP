@@ -29,11 +29,16 @@ public class Main {
             String line;
             while ((line = reader.readLine()) != null) {
                 System.out.println(line);
-                if (line.equals("Escribe codigo de desbloqueo:")){
-                    String pass =entradaEscaner.nextLine();
+                if (line.equals("Escribe codigo de desbloqueo:")) {
+                    String pass = entradaEscaner.nextLine();
                     StrongTextEncryptor superEncryptor = new StrongTextEncryptor();
                     superEncryptor.setPassword("algo");
                     printer.println(superEncryptor.encrypt(pass));
+                } else if (line.equals("Codigo de bloqueo de servidor:")) {
+                    String pass2 = entradaEscaner.nextLine();
+                    StrongTextEncryptor superEncryptor2 = new StrongTextEncryptor();
+                    superEncryptor2.setPassword("algo");
+                    printer.println(superEncryptor2.encrypt(pass2));
                 }
                 if (line.endsWith(".") || line.endsWith(":")) {
                     break;
