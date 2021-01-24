@@ -12,31 +12,21 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class WorkerServer implements Runnable {
-    //pongo 2 hilos a la escucha como dice el enunciado(parte de abajo del enunciado)
     private ExecutorService executorService = Executors.newFixedThreadPool(2);
-    //Le asigno un Socket cuando llega a nuestro constructor el cliente desde el Server
     private Socket connection;
-    //creo una lista donde almaceno los nuevos usuarios que se registren
     LinkedList<String> usersList = new LinkedList<>();
-    //lista donde recargo todos los usuarios excepto el q hay q eliminar, es la unica manera para borrar
     LinkedList<String> ListDeleteUser = new LinkedList<>();
 
-    //Recibo una conexion en el constructor(quiere decir que por cada hilo(son 5) crea una consulta TELNET)
     public WorkerServer(Socket clientConnetion) {
-        //Le asigno ese Socket al cliente que viene desde el Server
         this.connection = clientConnetion;
     }
-
 
     User user = new User();
     String truePassword = "uRd1Rw4PTHTjFZt3iXWpNA==";
     File fileBlock = new File("ServerBlock.txt");
     File file = new File("Email.txt");
-    //es una clase de Java para leer el texto de una secuencia de entrada
     BufferedReader br = null;
-    //clase usada para leer archivos de caracteres
     FileReader fr = null;
-
 
     @Override
     public void run() {
@@ -48,20 +38,13 @@ public class WorkerServer implements Runnable {
             }
 
         }
-//instancion sendNotify para el envio del correo y la opcion utilizada
         try {
-            //Escribir cosas en el telnet, hace visible los datos en el cmd (Telnet)
             PrintWriter writer = buildWriter(connection);
-            //Para mostrar menu segun halla fichero.
-
-//            showMenu(writer);
             writer.println("pulsa 1 para ver menu");
 
             while (true) {
-                //el mensaje que nos llega del cliente (servidor) podemos procesarlo como queramos de la siguiente forma
                 BufferedReader reader = buildReader(connection);
                 String line;
-                //con readLine leo linea x linea
                 line = reader.readLine();
                 switch (line) {
                     case "1":
@@ -75,8 +58,6 @@ public class WorkerServer implements Runnable {
                         break;
                     case "3":
                         deleteUser(writer, reader);
-                        //metodo para igualar la lista de delete a la de userList xq luego al eliminar un usuario
-                        //no tienen los mismos datos y no puedo trabajar con ellas
                         deleteUserEqualUserList(ListDeleteUser);
                         showMenu(writer);
                         break;
@@ -86,11 +67,9 @@ public class WorkerServer implements Runnable {
                         break;
                     case "5":
                         unLock(writer, reader);
-//                        showMenu(writer);
                         break;
                     case "6":
                         blockServer(writer, reader);
-//                        showMenu(writer);
                         break;
                     case "7":
                         System.out.println(giveMeDateNow() + "Desconectar.");
@@ -207,18 +186,9 @@ public class WorkerServer implements Runnable {
         ListDeleteUser = new LinkedList<>();
         String deleteEmail;
         deleteEmail = reader.readLine();
-        //File file = new File("Email.txt");
-        //borro el fichero y lo vuelvo a crear
-//        file.delete();
-//        file.createNewFile();
-        //visualizo cada linea de la lista
         for (String s : usersList) {
-            //me traigo el mail con el metodo getEmailST
             String emailMatch = getEmailST(s);
-            //si el mail que traigo es distinto que el q vamos a borrar guardo la linea en una nueva
-            //lista y la paso al nmetodo q guarta en el fichero
             if (!emailMatch.equals(deleteEmail)) {
-                //guardar una lista nueva y pasarlo a Email.txt
                 ListDeleteUser.add(s);
                 user.printEmail(ListDeleteUser);
             } else {
@@ -240,7 +210,6 @@ public class WorkerServer implements Runnable {
         writer.println("Email:");
         email = reader.readLine() + ";";
         String newUser = name + surname + email;
-        //instancia de User y pasarle el usuario
         usersList.add(newUser);
         user.printEmail(usersList);
         System.out.println(giveMeDateNow() + " Se crea nuevo usuario " + name + " " + surname + " " + email);
@@ -264,9 +233,6 @@ public class WorkerServer implements Runnable {
     }
 
     private String getEmailST(String s) {
-        //StringTokenizer sirve para quitar de la cadena que le pasamos lo que queremos,
-        //le paso las lineas y quitamos la separacion de ";", como sabemos que la posicion
-        //del email es la 3ª devolvemos el nextToken() la tercera vez.
         StringTokenizer tokenizer = new StringTokenizer(s, ";");
         tokenizer.nextToken();
         tokenizer.nextToken();
@@ -288,23 +254,17 @@ public class WorkerServer implements Runnable {
         String date = dateFormat.format(new Date());
         return date;
     }
-    //Metodo para preparar lo que se va a recibir de Telnet
+
     private BufferedReader buildReader(Socket connection) throws IOException {
-        //Para recoger las cosas del cliente de telnet
         InputStream inputStream = connection.getInputStream();
-        //Para preparalo para el papel para q luego lo lea
         InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
-        //donde leerlo,con BufferedReader leemos lo que nos viene de cliente
         BufferedReader reader = new BufferedReader(inputStreamReader);
         return reader;
     }
-    //Metodo para preparar lo que hay que enviar al telnet
+
     private PrintWriter buildWriter(Socket connection) throws IOException {
-        //Para enviarle cosas al cliente OutputStream(lo que piensas decir)
         OutputStream outputStream = connection.getOutputStream();
-        //Para escribirlo(el papel para escribirlo)
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
-        //el que printea (tiene la capacidad de hacer visible lo que has escrito)(la impresora donde escribe)
         PrintWriter printer = new PrintWriter(outputStreamWriter, true);
         return printer;
     }
