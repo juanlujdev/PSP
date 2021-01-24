@@ -17,9 +17,10 @@ public class Main {
         OutputStream outputStream = socket.getOutputStream();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         PrintWriter printer = new PrintWriter(new OutputStreamWriter(outputStream), true);
-//        printer.println("hola");
+        //para q no valla con retraso de un paso la aplicacion, gestionamos la pirmera informacion
+        //que nos llega del servidor xq conforme enchufamos el socket enpieza nuestro servidor a darnos
+        //informacion
         System.out.println(reader.readLine());
-//        System.out.println("Introduce comando: ");
         String entradaTeclado;
         Scanner entradaEscaner = new Scanner(System.in);
 
@@ -34,16 +35,19 @@ public class Main {
                     StrongTextEncryptor superEncryptor = new StrongTextEncryptor();
                     superEncryptor.setPassword("algo");
                     printer.println(superEncryptor.encrypt(pass));
+                    //MOSTRA por pantalla lo q viene del servidor,para gestionar el espacio en blanco
+                    System.out.println(reader.readLine());
+
                 } else if (line.equals("Codigo de bloqueo de servidor:")) {
                     String pass2 = entradaEscaner.nextLine();
                     StrongTextEncryptor superEncryptor2 = new StrongTextEncryptor();
                     superEncryptor2.setPassword("algo");
                     printer.println(superEncryptor2.encrypt(pass2));
+                    System.out.println(reader.readLine());
                 }
                 if (line.endsWith(".") || line.endsWith(":")) {
                     break;
                 }
-
             }
         }
     }

@@ -86,11 +86,11 @@ public class WorkerServer implements Runnable {
                         break;
                     case "5":
                         unLock(writer, reader);
-                        showMenu(writer);
+//                        showMenu(writer);
                         break;
                     case "6":
                         blockServer(writer, reader);
-                        showMenu(writer);
+//                        showMenu(writer);
                         break;
                     case "7":
                         System.out.println(giveMeDateNow() + "Desconectar.");
@@ -124,7 +124,7 @@ public class WorkerServer implements Runnable {
             fileBlock.delete();
             System.out.println("la clave coincide");
             System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo correcto");
-            writer.println("clave correcta, servidor desbloqueado");
+            writer.println("servidor desbloqueado, pulse 1 para mostrar menu");
         } else {
             writer.println("Clave incorrecta");
             System.out.println("Clave incorrecta");
@@ -142,7 +142,7 @@ public class WorkerServer implements Runnable {
         String password1 = superEncryptor.decrypt(truePassword);
         if (password.equals(password1)) {
             System.out.println("la clave coincide.");
-            writer.println("la clave coincide, servidor bloqueado");
+            writer.println("servidor bloqueado, pulse 1 para mostrar menu");
             fileBlock.createNewFile();
             System.out.println(giveMeDateNow() + "introducido correctamente codigo de bloqueo:");
         } else {
@@ -229,7 +229,6 @@ public class WorkerServer implements Runnable {
 
     private void createUser(PrintWriter writer, BufferedReader reader) throws IOException {
         System.out.println(giveMeDateNow() + "Pulsa opcion crear usuario ");
-
         String name;
         String surname;
         String email;
@@ -255,7 +254,6 @@ public class WorkerServer implements Runnable {
             usersList.add(linea);
         }
     }
-
 
     private void deleteUserEqualUserList(LinkedList<String> ListDeleteUser) {
         usersList = new LinkedList<>();
@@ -284,13 +282,11 @@ public class WorkerServer implements Runnable {
         writer.println("7- Desconectar.");
     }
 
-
     private String giveMeDateNow() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy - HH:mm:ss");
         String date = dateFormat.format(new Date());
         return date;
     }
-
     //Metodo para preparar lo que se va a recibir de Telnet
     private BufferedReader buildReader(Socket connection) throws IOException {
         //Para recoger las cosas del cliente de telnet
@@ -301,7 +297,6 @@ public class WorkerServer implements Runnable {
         BufferedReader reader = new BufferedReader(inputStreamReader);
         return reader;
     }
-
     //Metodo para preparar lo que hay que enviar al telnet
     private PrintWriter buildWriter(Socket connection) throws IOException {
         //Para enviarle cosas al cliente OutputStream(lo que piensas decir)
