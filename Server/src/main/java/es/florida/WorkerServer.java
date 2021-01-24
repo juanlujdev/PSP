@@ -142,8 +142,8 @@ public class WorkerServer implements Runnable {
         String password1 = superEncryptor.decrypt(truePassword);
         if (password.equals(password1)) {
             System.out.println("la clave coincide.");
-            writer.println("servidor bloqueado, pulse 1 para mostrar menu");
             fileBlock.createNewFile();
+            writer.println("servidor bloqueado, pulse 1 para mostrar menu");
             System.out.println(giveMeDateNow() + "introducido correctamente codigo de bloqueo:");
         } else {
             System.out.println("Clave incorrecta.");
