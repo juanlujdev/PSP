@@ -126,7 +126,7 @@ public class WorkerServer implements Runnable {
             System.out.println(giveMeDateNow() + "introducido codigo de desbloqueo correcto");
             writer.println("servidor desbloqueado, pulse 1 para mostrar menu");
         } else {
-            writer.println("Clave incorrecta");
+            writer.println("Clave incorrecta, pulse 1 para mostrar menu");
             System.out.println("Clave incorrecta");
         }
     }
@@ -146,6 +146,7 @@ public class WorkerServer implements Runnable {
             writer.println("servidor bloqueado, pulse 1 para mostrar menu");
             System.out.println(giveMeDateNow() + "introducido correctamente codigo de bloqueo:");
         } else {
+            writer.println("password incorrecto, pulse 1 para mostrar menu");
             System.out.println("Clave incorrecta.");
         }
     }
