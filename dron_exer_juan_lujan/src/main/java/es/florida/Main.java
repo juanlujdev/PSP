@@ -8,6 +8,9 @@ public class Main {
         dronController.connect();
         dronController.takeOff();
         dronController.land();
+        dronController.firePrimaryCannon();
+        dronController.fireSecondaryWeapon();
+        dronController.shutDown();
 
     }
 }
