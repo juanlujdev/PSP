@@ -13,10 +13,19 @@ public class Enemy implements Runnable {
     @Override
     public void run() {
         try {
-
+            String comand;
             PrintWriter writer = buildWriter(connection);
-            writer.println("ENEMY_SPOTTED");
-            System.out.println("el comando ha llegado");
+            BufferedReader reader = buildReader(connection);
+            writer.println("Escriba su comando: ");
+            comand=reader.readLine();
+            if (comand.equals("ENEMY_SPOTTED")){
+                System.out.println("el comando se ha ejecutado.");
+            }
+            else{
+                System.out.println("Comando no valido");
+            }
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -30,6 +39,13 @@ public class Enemy implements Runnable {
         OutputStreamWriter outputStreamWriter = new OutputStreamWriter(outputStream);
         PrintWriter printer = new PrintWriter(outputStreamWriter, true);
         return printer;
+    }
+
+    private BufferedReader buildReader(Socket connection) throws IOException {
+        InputStream inputStream = connection.getInputStream();
+        InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        return reader;
     }
 
 
